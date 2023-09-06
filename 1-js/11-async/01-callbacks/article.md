@@ -1,8 +1,8 @@
 
 
-# Introduction: callbacks
+# Giới Thiệu: callbacks
 
-```warn header="We use browser methods in examples here"
+```warn header="Chúng ta dùng Browser Methods ở những ví dụ này"
 To demonstrate the use of callbacks, promises and other abstract concepts, we'll be using some browser methods: specifically, loading scripts and performing simple document manipulations.
 
 If you're not familiar with these methods, and their usage in the examples is confusing, you may want to read a few chapters from the [next part](/document) of the tutorial.
@@ -10,17 +10,17 @@ If you're not familiar with these methods, and their usage in the examples is co
 Although, we'll try to make things clear anyway. There won't be anything really complex browser-wise.
 ```
 
-Many functions are provided by JavaScript host environments that allow you to schedule *asynchronous* actions. In other words, actions that we initiate now, but they finish later.
+Nhiều hàm được cung cấp bởi môi trường máy chủ JavaScript cho phép bạn lên lịch các hành động *không đồng bộ*. Nói cách khác, hành động bắt đầu bây giờ, nhưng được kết thúc sau đó.
 
-For instance, one such function is the `setTimeout` function.
+Ví dụ, hàm `setTimeout`.
 
-There are other real-world examples of asynchronous actions, e.g. loading scripts and modules (we'll cover them in later chapters).
+Có nhiều ví dụ thực tế khác về hành động bất đồng bộ, vd: Tải scripts và modules (Sẽ nói ở phần sau).
 
-Take a look at the function `loadScript(src)`, that loads a script with the given `src`:
+Nói một chút về hàm `loadScript(src)`, nó tải một script được cho bởi `src`:
 
 ```js
 function loadScript(src) {
-  // creates a <script> tag and append it to the page
+  // Tạo một thẻ <script> và gắn vào trang web
   // this causes the script with given src to start loading and run when complete
   let script = document.createElement('script');
   script.src = src;
@@ -30,16 +30,16 @@ function loadScript(src) {
 
 It appends to the document the new, dynamically created, tag `<script src="…">` with given `src`. The browser automatically starts loading it and executes when complete.
 
-We can use this function like this:
+Ta có thể sử dụng hàm này như sau:
 
 ```js
-// load and execute the script at the given path
+// Tải và thực thi script ở đường dẫn được cung cấp
 loadScript('/my/script.js');
 ```
 
-The script is executed "asynchronously", as it starts loading now, but runs later, when the function has already finished.
+Đoạn script được thực thi "bất đồng bộ", nó bắt đầu tải lúc này, nhưng chạy sau đó, khi mà hàm đã kết thúc.
 
-If there's any code below `loadScript(…)`, it doesn't wait until the script loading finishes.
+Nếu có bất kì đoạn code nào ở sau `loadScript(…)`, thì nó không cần chờ đoạn script kết thúc.
 
 ```js
 loadScript('/my/script.js');
@@ -48,21 +48,21 @@ loadScript('/my/script.js');
 // ...
 ```
 
-Let's say we need to use the new script as soon as it loads. It declares new functions, and we want to run them.
+Chúng ta muốn dùng đoạn script đó ngay sau khi nó được tải. Trong đoạn script, có một hàm tên là new functions, và ta muốn chạy nó.
 
-But if we do that immediately after the `loadScript(…)` call, that wouldn't work:
+nhưng nếu ta gọi hàm new functions sau khi gọi hàm `loadScript(…)`, nó không chạy đâu:
 
 ```js
 loadScript('/my/script.js'); // the script has "function newFunction() {…}"
 
 *!*
-newFunction(); // no such function!
+newFunction(); // đây là hàm nào vậy? tôi không biết!
 */!*
 ```
 
-Naturally, the browser probably didn't have time to load the script. As of now, the `loadScript` function doesn't provide a way to track the load completion. The script loads and eventually runs, that's all. But we'd like to know when it happens, to use new functions and variables from that script.
+Một cách bình thường, Trình duyệt có lẽ không có thời gian để tải đoạn script. Hiện tại, hàm `loadScript` không hỗ trợ cách để kiểm tra xem quá trình tải đã hoàn thành chưa. Đoạn script sẽ được tải, tải xong thì chạy. Nhưng chúng ta muốn biết khi nào nó xong, để mà chúng ta có thể dùng hàm new funtion trong đó.
 
-Let's add a `callback` function as a second argument to `loadScript` that should execute when the script loads:
+Hãy thêm một hàm `callback` như một tham số thứ hai của hàm `loadScript`, hàm này là hàm mà ta muốn thực thi sau khi script được tải xong:
 
 ```js
 function loadScript(src, *!*callback*/!*) {
@@ -153,11 +153,11 @@ loadScript('/my/script.js', function(script) {
 
 So, every new action is inside a callback. That's fine for few actions, but not good for many, so we'll see other variants soon.
 
-## Handling errors
+## Khiểm soát lỗi
 
-In the above examples we didn't consider errors. What if the script loading fails? Our callback should be able to react on that.
+Ở các ví dụ trên, chúng ta đã không hề xem xét đến lỗi. Chuyện gì xảy ra nếu quá trình tải script bị lỗi? Our callback should be able to react on that.
 
-Here's an improved version of `loadScript` that tracks loading errors:
+Đây là phiên bản cải tiến của`loadScript`, có bao gồm kiểm tra lỗi:
 
 ```js
 function loadScript(src, callback) {
@@ -173,7 +173,7 @@ function loadScript(src, callback) {
 }
 ```
 
-It calls `callback(null, script)` for successful load and `callback(error)` otherwise.
+Gọi `callback(null, script)` khi tải thành công và ngược lại gọi `callback(error)` .
 
 The usage:
 ```js
@@ -188,8 +188,8 @@ loadScript('/my/script.js', function(error, script) {
 
 Once again, the recipe that we used for `loadScript` is actually quite common. It's called the "error-first callback" style.
 
-The convention is:
-1. The first argument of the `callback` is reserved for an error if it occurs. Then `callback(err)` is called.
+Điểm mạnh:
+1. Tham số đầu tiên của `callback` is reserved for an error if it occurs. Then `callback(err)` is called.
 2. The second argument (and the next ones if needed) are for the successful result. Then `callback(null, result1, result2…)` is called.
 
 So the single `callback` function is used both for reporting errors and passing back results.
